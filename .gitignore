@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# Godot 4 import / cache
+.godot/
+*.translation
+
+# Build artifacts
+build/
+*.pck
+
+# iOS export bundles & SDK frameworks (large; regenerate via Godot iOS export)
+Gravity Flip.xcframework/
+MoltenVK.xcframework/
+
+# Xcode user-specific state
+**/xcuserdata/
+**/*.xcuserstate
+**/project.xcworkspace/xcuserdata/
+
+# Logs
+*.log
