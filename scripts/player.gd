@@ -43,6 +43,13 @@ const BALL_LEFT_FRAC := 0.3
 ## Transient shake delta added on top of the computed left-anchor offset.
 var _shake_offset: Vector2 = Vector2.ZERO
 
+## Tween handles we may need to kill if the player resets while they're
+## mid-flight (death fade-out, screen shake, etc.). Without killing them,
+## a running tween will overwrite the values reset() just set and the ball
+## stays invisible/tiny on the next level.
+var _death_tween: Tween
+var _shake_tween: Tween
+
 
 func _ready() -> void:
 	_setup_visuals()
@@ -179,10 +186,13 @@ func _die() -> void:
 	is_alive = false
 	velocity = Vector2.ZERO
 
-	# Death visual: scale down + fade
-	var tween := create_tween().set_parallel(true)
-	tween.tween_property(sprite, "scale", Vector2(0.1, 0.1), 0.3)
-	tween.tween_property(sprite, "modulate:a", 0.0, 0.3)
+	# Death visual: scale down + fade. Stored so reset() can kill it if the
+	# player retries / transitions before the tween finishes.
+	if _death_tween and _death_tween.is_valid():
+		_death_tween.kill()
+	_death_tween = create_tween().set_parallel(true)
+	_death_tween.tween_property(sprite, "scale", Vector2(0.1, 0.1), 0.3)
+	_death_tween.tween_property(sprite, "modulate:a", 0.0, 0.3)
 	if trail:
 		trail.emitting = false
 
@@ -206,6 +216,13 @@ func collect_star() -> void:
 
 # -- Restart --
 func reset(start_pos: Vector2) -> void:
+	# Kill any in-flight tweens BEFORE we set sprite/camera state, so they
+	# don't overwrite our reset values on subsequent frames.
+	if _death_tween and _death_tween.is_valid():
+		_death_tween.kill()
+	if _shake_tween and _shake_tween.is_valid():
+		_shake_tween.kill()
+
 	global_position = start_pos
 	velocity = Vector2.ZERO
 	gravity_dir = 1.0
@@ -215,10 +232,16 @@ func reset(start_pos: Vector2) -> void:
 	_total_distance = 0.0
 	_can_flip = true
 	sprite.scale = Vector2.ONE
-	sprite.modulate.a = 1.0
+	sprite.modulate = Color.WHITE
 	sprite.rotation = 0.0
+	_shake_offset = Vector2.ZERO
 	if trail:
 		trail.emitting = true
+	# Snap the camera to the new position so position_smoothing doesn't leave
+	# the ball off-screen for the first ~second after a level transition.
+	if camera:
+		camera.reset_smoothing()
+		_update_camera_offset()
 
 
 # -- Visual helpers --
@@ -242,12 +265,14 @@ func _shake_camera(intensity: float, duration: float) -> void:
 		return
 	# Tween a separate _shake_offset; the per-frame camera offset update adds
 	# this on top of the computed left-anchor base, so shake never resets the
-	# anchor.
-	var tween := create_tween()
-	tween.tween_property(self, "_shake_offset",
+	# anchor. Stored so reset() can kill it.
+	if _shake_tween and _shake_tween.is_valid():
+		_shake_tween.kill()
+	_shake_tween = create_tween()
+	_shake_tween.tween_property(self, "_shake_offset",
 		Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity)),
 		duration * 0.5)
-	tween.tween_property(self, "_shake_offset", Vector2.ZERO, duration * 0.5)
+	_shake_tween.tween_property(self, "_shake_offset", Vector2.ZERO, duration * 0.5)
 
 
 func get_distance() -> float:

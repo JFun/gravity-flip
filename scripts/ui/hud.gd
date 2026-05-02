@@ -30,8 +30,10 @@ func _on_mute_pressed() -> void:
 
 
 func _refresh_mute_icon(muted: bool) -> void:
+	# MuteButton is a custom Button (mute_button.gd) that renders a diagonal
+	# slash through the ♪ glyph when its `muted` property is true.
 	if mute_button:
-		mute_button.text = "✕" if muted else "♪"
+		mute_button.muted = muted
 
 
 func _apply_font_size() -> void:
@@ -45,6 +47,10 @@ func _apply_font_size() -> void:
 	for label in [level_label, star_label, streak_label]:
 		if label:
 			label.add_theme_font_size_override("font_size", scaled)
+	# ♪ glyph is visually smaller than letters in the default font; bump the
+	# button's font so it reads as the same weight as the labels next to it.
+	if mute_button:
+		mute_button.add_theme_font_size_override("font_size", int(scaled * 1.4))
 
 
 func update_display(level: int, stars: int, streak: int) -> void:
