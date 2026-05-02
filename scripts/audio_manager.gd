@@ -12,6 +12,17 @@ const SOUNDS := {
 	"level_clear": "res://assets/sounds/level_clear.wav",
 }
 
+## Per-sound default volume offsets (dB). The placeholder WAVs were generated
+## at different peak amplitudes and frequencies, so perceived loudness varies.
+## Tuned by ear — flip is the most frequent so it's pulled down, death and
+## level_clear are big "moments" so they sit at the loudest reference.
+const VOLUMES := {
+	"flip": -6.0,
+	"star": -3.0,
+	"death": 0.0,
+	"level_clear": -2.0,
+}
+
 signal mute_changed(muted: bool)
 
 var muted: bool = false
@@ -36,17 +47,20 @@ func _ready() -> void:
 	_load_settings()
 
 
-func play(sound_name: String, volume_db: float = 0.0) -> void:
+## Plays a registered sound. `volume_db_offset` is added to the per-sound
+## default in VOLUMES — pass 0.0 (default) to use the balanced level.
+func play(sound_name: String, volume_db_offset: float = 0.0) -> void:
 	if muted:
 		return
 	var stream = _streams.get(sound_name)
 	if stream == null:
 		push_warning("AudioManager: unknown sound %s" % sound_name)
 		return
+	var base_db: float = VOLUMES.get(sound_name, 0.0)
 	var p := _players[_next_player]
 	_next_player = (_next_player + 1) % _players.size()
 	p.stream = stream
-	p.volume_db = volume_db
+	p.volume_db = base_db + volume_db_offset
 	p.play()
 
 
