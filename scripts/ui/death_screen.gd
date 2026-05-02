@@ -2,6 +2,9 @@
 extends CanvasLayer
 
 signal retry_pressed
+## Kept for the future settings menu; not wired to a button currently.
+## Reset-progress is destructive and was easy to mis-tap below Retry, so the
+## button was removed from this screen. Emit from a confirmation flow later.
 signal reset_progress_pressed
 
 const REFERENCE_SHORT_SIDE := 1080.0
@@ -10,7 +13,6 @@ const LEVEL_REF_SIZE := 52.0
 const STARS_REF_SIZE := 56.0
 const STREAK_REF_SIZE := 44.0
 const BUTTON_REF_SIZE := 72.0
-const RESET_REF_SIZE := 30.0
 const PANEL_WIDTH_RATIO := 0.75
 const PANEL_MIN_W := 420.0
 const PANEL_MAX_W := 1200.0
@@ -21,14 +23,11 @@ const PANEL_MAX_W := 1200.0
 @onready var stars_label: Label = $CenterContainer/PanelContainer/VBoxContainer/StarsLabel
 @onready var streak_label: Label = $CenterContainer/PanelContainer/VBoxContainer/StreakLabel
 @onready var retry_button: Button = $CenterContainer/PanelContainer/VBoxContainer/RetryButton
-@onready var reset_button: Button = $CenterContainer/PanelContainer/VBoxContainer/ResetButton
 
 
 func _ready() -> void:
 	if retry_button:
 		retry_button.pressed.connect(_on_retry_pressed)
-	if reset_button:
-		reset_button.pressed.connect(_on_reset_pressed)
 	get_viewport().size_changed.connect(_apply_font_sizes)
 	_apply_font_sizes()
 
@@ -41,7 +40,6 @@ func _apply_font_sizes() -> void:
 	_set_size(stars_label, STARS_REF_SIZE * scale, 24, 80)
 	_set_size(streak_label, STREAK_REF_SIZE * scale, 22, 64)
 	_set_size(retry_button, BUTTON_REF_SIZE * scale, 32, 96)
-	_set_size(reset_button, RESET_REF_SIZE * scale, 18, 40)
 	if panel:
 		var w: float = clamp(size.x * PANEL_WIDTH_RATIO, PANEL_MIN_W, PANEL_MAX_W)
 		panel.custom_minimum_size = Vector2(w, 0)
@@ -76,7 +74,3 @@ func hide_screen() -> void:
 
 func _on_retry_pressed() -> void:
 	retry_pressed.emit()
-
-
-func _on_reset_pressed() -> void:
-	reset_progress_pressed.emit()

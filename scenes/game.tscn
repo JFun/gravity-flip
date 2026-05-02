@@ -315,14 +315,6 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_retry_normal")
 text = "Retry"
 alignment = 1
 
-[node name="ResetButton" type="Button" parent="DeathScreen/CenterContainer/PanelContainer/VBoxContainer"]
-layout_mode = 2
-custom_minimum_size = Vector2(280, 48)
-theme_override_colors/font_color = Color(0.6, 0.6, 0.65, 1)
-theme_override_font_sizes/font_size = 28
-flat = true
-text = "Reset progress"
-
 [node name="LevelClearScreen" type="CanvasLayer" parent="."]
 layer = 20
 visible = false
