@@ -1,0 +1,5 @@
+- [UI font scaling for orientation parity](feedback_ui_scaling.md) — scale fonts off viewport short side so portrait/landscape feel similar
+- [Verify UI changes locally before deploying](feedback_test_ui_locally.md) — use the dev screenshot harness to check both orientations before flashing
+- [Use Write tool for new files](feedback_file_creation.md) — never use cat heredocs or echo redirection to author file content
+- [iOS deploy pipeline](reference_deploy.md) — godot pack export → xcodebuild → devicectl install/launch on paired iPhone
+- [iOS viewport not ready in _ready()](feedback_ios_viewport_ready.md) — defer viewport-size-dependent setup; first synchronous read returns 0
