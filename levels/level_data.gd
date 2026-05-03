@@ -72,7 +72,7 @@ static func level_03() -> Dictionary:
 		"stars": [
 			{"x": 300, "y": 250},  # Easy — in the gap
 			{"x": 750, "y": 300},  # Medium — between walls
-			{"x": 900, "y": 500},  # Hard — requires detour flip
+			{"x": 950, "y": 500},  # Hard — requires detour flip just past wall
 		],
 		"length": 1300,
 	}
@@ -108,9 +108,9 @@ static func level_05() -> Dictionary:
 			{"type": "wall", "x": 1150, "gap_y": 350, "gap_size": 190},
 		],
 		"stars": [
-			{"x": 475, "y": 300},
-			{"x": 925, "y": 300},
-			{"x": 1150, "y": 550},
+			{"x": 475, "y": 500},  # In the gap (gap_y=500)
+			{"x": 925, "y": 550},  # In the gap (gap_y=550)
+			{"x": 1100, "y": 550},  # Detour: just before wall at 1150
 		],
 		"length": 1500,
 	}
@@ -164,9 +164,9 @@ static func level_08() -> Dictionary:
 			{"type": "spike_floor", "x": 1200},
 		],
 		"stars": [
-			{"x": 400, "y": 300},
-			{"x": 800, "y": 600},
-			{"x": 1200, "y": 200},
+			{"x": 400, "y": 500},  # In the gap (gap_y=500)
+			{"x": 700, "y": 600},  # Between walls
+			{"x": 1100, "y": 200},  # Between walls, demands a flip-up
 		],
 		"length": 1600,
 	}
@@ -181,9 +181,9 @@ static func level_09() -> Dictionary:
 			{"type": "wall", "x": 800, "gap_y": 400, "gap_size": 280},
 		],
 		"stars": [
-			{"x": 400, "y": 250},
-			{"x": 600, "y": 400},
-			{"x": 800, "y": 550},
+			{"x": 400, "y": 300},  # In the gap [260, 540]
+			{"x": 600, "y": 400},  # Between walls
+			{"x": 800, "y": 520},  # In the gap [260, 540], near bottom edge
 		],
 		"length": 1200,
 	}
@@ -205,9 +205,9 @@ static func level_10() -> Dictionary:
 			{"type": "wall", "x": 1800, "gap_y": 300, "gap_size": 170},
 		],
 		"stars": [
-			{"x": 450, "y": 550},
-			{"x": 1050, "y": 500},
-			{"x": 1550, "y": 250},  # Hard — must detour
+			{"x": 450, "y": 550},   # Between walls 250 and 650
+			{"x": 1100, "y": 500},  # Detour: just past wall at 1050
+			{"x": 1500, "y": 250},  # Detour: just before wall at 1550 — must flip up then dive into gap
 		],
 		"length": 2200,
 	}
@@ -238,9 +238,15 @@ static func _generate_endless(num: int) -> Dictionary:
 			var spike_type: String = "spike_floor" if rng.randf() > 0.5 else "spike_ceiling"
 			obstacles.append({"type": spike_type, "x": spike_x})
 
-		# Place star near some walls
+		# Place a star reachable through this wall: same x, y inside the gap
+		# (gap spans gap_y ± gap_size/2). Random Y previously placed stars
+		# inside the wall's solid section — physically uncollectable.
 		if i % 3 == 0:
-			stars.append({"x": x, "y": rng.randf_range(150.0, 650.0)})
+			var star_y: float = rng.randf_range(
+				gap_y - gap_size * 0.4,
+				gap_y + gap_size * 0.4,
+			)
+			stars.append({"x": x, "y": star_y})
 
 	return {
 		"name": "Level %d" % num,

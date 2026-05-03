@@ -263,10 +263,10 @@ func _create_star() -> Area2D:
 	shape.shape = circle
 	star.add_child(shape)
 
-	# Visual
-	var visual := ColorRect.new()
-	visual.size = Vector2(30, 30)
-	visual.position = Vector2(-15, -15)
+	# Visual — a real 5-pointed star polygon, not a square. The HUD shows
+	# "★ N", so the in-game pickup needs to look like a star too.
+	var visual := Polygon2D.new()
+	visual.polygon = _star_polygon(22.0, 9.0)
 	visual.color = Color(1.0, 0.85, 0.2)
 	star.add_child(visual)
 
@@ -277,6 +277,19 @@ func _create_star() -> Area2D:
 	)
 
 	return star
+
+
+## Returns a 5-pointed star polygon with the given outer / inner radii,
+## centered on the origin and pointing up.
+func _star_polygon(outer_r: float, inner_r: float) -> PackedVector2Array:
+	var pts := PackedVector2Array()
+	var points := 5
+	for i in points * 2:
+		var r: float = outer_r if i % 2 == 0 else inner_r
+		# Start at the top (-PI/2) and step around in 10 increments.
+		var angle: float = -PI / 2.0 + i * PI / points
+		pts.append(Vector2(cos(angle) * r, sin(angle) * r))
+	return pts
 
 
 # -- Signal handlers --

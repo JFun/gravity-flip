@@ -3,3 +3,6 @@
 - [Use Write tool for new files](feedback_file_creation.md) — never use cat heredocs or echo redirection to author file content
 - [iOS deploy pipeline](reference_deploy.md) — godot pack export → xcodebuild → devicectl install/launch on paired iPhone
 - [iOS viewport not ready in _ready()](feedback_ios_viewport_ready.md) — defer viewport-size-dependent setup; first synchronous read returns 0
+- [Star placement must respect wall gaps](feedback_star_placement.md) — collectibles at a wall's x must have y inside the gap, or they're uncollectable
+- [Visual consistency: HUD glyph ↔ world object](feedback_visual_consistency.md) — HUD shows ★, the in-game pickup must be a star polygon, not a yellow square
+- [Image size limit in long sessions](reference_image_size_limit.md) — many-image sessions enforce 2000px max dimension; resize iOS screenshots or /clear
