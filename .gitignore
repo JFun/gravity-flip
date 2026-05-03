@@ -18,5 +18,8 @@ MoltenVK.xcframework
 **/*.xcuserstate
 **/project.xcworkspace/xcuserdata/
 
+# Xcode project edit backups
+**/project.pbxproj.bak
+
 # Logs
 *.log

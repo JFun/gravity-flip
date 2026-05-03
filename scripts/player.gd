@@ -212,6 +212,12 @@ func collect_star() -> void:
 	star_collected.emit(stars_collected)
 	_shake_camera(2.0, 0.05)
 	AudioManager.play("star")
+	# Engagement signal — collected stars per session is one of the cleanest
+	# proxies for "did the player engage" beyond just session length.
+	if Engine.has_singleton("Analytics") or get_node_or_null("/root/Analytics"):
+		get_node("/root/Analytics").log_event("star_collected", {
+			"count": stars_collected,
+		})
 
 
 # -- Restart --

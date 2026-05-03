@@ -105,6 +105,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _start_game() -> void:
+	Analytics.log_event("title_play", {
+		"saved_level": _load_saved_level(),
+	})
 	get_tree().change_scene_to_file(GAME_SCENE)
 
 

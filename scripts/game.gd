@@ -14,6 +14,10 @@ var total_score: int = 0
 var is_paused: bool = false
 var _is_transitioning: bool = false
 
+# -- Analytics --
+var _level_start_time: float = 0.0  ## Wall-clock seconds when current level loaded
+var _level_attempts: int = 0  ## Retries on the current level (resets on level change)
+
 # -- Transition overlay (built at runtime) --
 var _fade_layer: CanvasLayer
 var _fade_rect: ColorRect
@@ -115,6 +119,21 @@ func _load_level(level_num: int) -> void:
 
 	# Reset player
 	player.reset(Vector2(100, 400))
+
+	# Analytics: level_start. Tracked AFTER reset so the timer starts at the
+	# moment the player can actually act. Refresh the orientation user
+	# property here too — Firebase sticks the latest value to all subsequent
+	# events, so every funnel can be sliced by portrait vs. landscape.
+	_level_start_time = Time.get_unix_time_from_system()
+	var vp_size := get_viewport().get_visible_rect().size
+	Analytics.set_user_property(
+		"orientation",
+		"landscape" if vp_size.x > vp_size.y else "portrait",
+	)
+	Analytics.log_event("level_start", {
+		"level": level_num,
+		"attempt": _level_attempts + 1,
+	})
 
 
 func _build_level(data: Dictionary) -> void:
@@ -294,6 +313,14 @@ func _star_polygon(outer_r: float, inner_r: float) -> PackedVector2Array:
 
 # -- Signal handlers --
 func _on_player_died() -> void:
+	Analytics.log_event("level_death", {
+		"level": current_level,
+		"attempt": _level_attempts + 1,
+		"stars": player.stars_collected,
+		"flip_streak": player.flip_streak,
+		"distance": int(player.get_distance()),
+		"time_s": float(Time.get_unix_time_from_system() - _level_start_time),
+	})
 	death_screen.show_screen(
 		current_level,
 		player.stars_collected,
@@ -326,6 +353,14 @@ func _transition_to_next_level() -> void:
 
 	AudioManager.play("level_clear")
 
+	Analytics.log_event("level_clear", {
+		"level": current_level,
+		"attempt": _level_attempts + 1,
+		"stars": player.stars_collected,
+		"flip_streak": player.flip_streak,
+		"time_s": float(Time.get_unix_time_from_system() - _level_start_time),
+	})
+
 	# Show the level-clear panel and wait for the player to tap continue.
 	level_clear_screen.show_screen(
 		current_level,
@@ -339,6 +374,7 @@ func _on_continue_to_next_level() -> void:
 	level_clear_screen.hide_screen()
 
 	current_level += 1
+	_level_attempts = 0  # Fresh level → reset attempt counter
 	_save_progress()
 	_level_label.text = "Level %d" % current_level
 
@@ -365,6 +401,11 @@ func _on_continue_to_next_level() -> void:
 
 
 func _on_retry() -> void:
+	_level_attempts += 1  # Counts the death we just experienced
+	Analytics.log_event("level_retry", {
+		"level": current_level,
+		"attempt": _level_attempts + 1,
+	})
 	death_screen.hide_screen()
 	_load_level(current_level)
 	_update_hud()
