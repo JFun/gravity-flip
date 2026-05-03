@@ -110,7 +110,7 @@ static func level_05() -> Dictionary:
 		"stars": [
 			{"x": 475, "y": 500},  # In the gap (gap_y=500)
 			{"x": 925, "y": 550},  # In the gap (gap_y=550)
-			{"x": 1100, "y": 550},  # Detour: just before wall at 1150
+			{"x": 1050, "y": 550},  # Detour: stay low before wall at 1150 dives up
 		],
 		"length": 1500,
 	}
@@ -206,8 +206,8 @@ static func level_10() -> Dictionary:
 		],
 		"stars": [
 			{"x": 450, "y": 550},   # Between walls 250 and 650
-			{"x": 1100, "y": 500},  # Detour: just past wall at 1050
-			{"x": 1500, "y": 250},  # Detour: just before wall at 1550 — must flip up then dive into gap
+			{"x": 1200, "y": 500},  # Detour: dive past wall at 1050 (gap_y=250) toward mid-corridor
+			{"x": 1400, "y": 250},  # Detour: stay high before wall at 1550 dives into low gap
 		],
 		"length": 2200,
 	}
