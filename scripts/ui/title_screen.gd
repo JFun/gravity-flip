@@ -22,18 +22,27 @@ const MUTE_REF_SIZE: float = 80.0
 @onready var mute_button: Button = $MuteButton
 @onready var reset_button: Button = $ResetButton
 
-var _ball_base_y: float = 0.0
-
 var _reset_armed: bool = false
 var _reset_disarm_timer: SceneTreeTimer
 
 
 func _ready() -> void:
 	_generate_ball_texture()
-	_animate_ball()
 
 	get_viewport().size_changed.connect(_apply_layout)
 	_apply_layout()
+
+	# Fade the title content in so it doesn't "pop" after the dark splash.
+	# Background stays opaque; only the foreground elements fade.
+	for node_path in ["TitleLabel", "HintLabel", "BallSlot", "ContinueLabel", "MuteButton", "ResetButton"]:
+		var n := get_node_or_null(node_path) as CanvasItem
+		if n:
+			n.modulate.a = 0.0
+	var fade := create_tween().set_parallel(true)
+	for node_path in ["TitleLabel", "HintLabel", "BallSlot", "ContinueLabel", "MuteButton", "ResetButton"]:
+		var n := get_node_or_null(node_path) as CanvasItem
+		if n:
+			fade.tween_property(n, "modulate:a", 1.0, 0.35)
 
 	# Tap anywhere on the background → start the game. _unhandled_input fires
 	# only after Buttons' built-in handlers consume their own clicks, so taps
@@ -131,25 +140,6 @@ func _disarm_reset() -> void:
 	_reset_armed = false
 	if reset_button:
 		reset_button.text = "Reset progress"
-
-
-# -- Cosmetic ball animation ---------------------------------------------------
-func _animate_ball() -> void:
-	if not ball_anim:
-		return
-	# Drive a true sine wave via tween_method instead of chaining property
-	# tweens — chained tweens with a 0-duration "reset" snap caused a visible
-	# 22px jump per cycle. tween_method updates the ball position every frame
-	# from sin(t), giving a continuous, seamless loop.
-	await get_tree().process_frame
-	_ball_base_y = ball_anim.position.y
-	var tween := create_tween().set_loops()
-	tween.tween_method(_set_ball_offset, 0.0, TAU, 2.8)
-
-
-func _set_ball_offset(t: float) -> void:
-	if ball_anim:
-		ball_anim.position.y = _ball_base_y + sin(t) * 22.0
 
 
 func _generate_ball_texture() -> void:

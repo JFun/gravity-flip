@@ -17,6 +17,8 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="Gravity Flip"
 run/main_scene="res://scenes/title_screen.tscn"
 config/features=PackedStringArray("4.6")
+boot_splash/show_image=false
+boot_splash/bg_color=Color(0.08, 0.1, 0.16, 1)
 
 [autoload]
 
