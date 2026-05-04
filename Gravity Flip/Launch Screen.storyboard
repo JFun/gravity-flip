@@ -16,11 +16,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SplashImage" translatesAutoresizingMaskIntoConstraints="NO" id="tjZ-vn-Lsv">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SplashImage" translatesAutoresizingMaskIntoConstraints="NO" id="tjZ-vn-Lsv">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.14000000059605" green="0.14000000059605" blue="0.14000000059605" alpha="1.0" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.08" green="0.1" blue="0.16" alpha="1.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="tjZ-vn-Lsv" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="Ak7-I4-yrQ"/>
                             <constraint firstAttribute="trailing" secondItem="tjZ-vn-Lsv" secondAttribute="trailing" id="Fon-JO-5cz"/>
@@ -36,7 +36,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="SplashImage" width="266.66665649414062" height="200"/>
+        <image name="SplashImage" width="720" height="1280"/>
     </resources>
 </document>
 
